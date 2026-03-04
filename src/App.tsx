@@ -1,6 +1,7 @@
+import React from "react";
 import { useState, useEffect, useRef } from "react";
 
-const Icon = ({ d, size = 24, style = {} }) => (
+const Icon = ({ d, size = 24, style = {} }: { d: any; size?: number; style?: any }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
     strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={style}>
     {(Array.isArray(d) ? d : [d]).map((p, i) => <path key={i} d={p} />)}
@@ -19,8 +20,8 @@ const MailI    = p => <Icon {...p} d={["M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2
 const PinI     = p => <Icon {...p} d={["M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z","M12 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4"]}/>;
 
 /* Scroll reveal */
-function useReveal(thr = 0.1) {
-  const ref = useRef(null); const [v, setV] = useState(false);
+function useReveal(thr = 0.1): [React.RefObject<any>, boolean] {
+  const ref = useRef<any>(null); const [v, setV] = useState(false);
   useEffect(() => {
     const el = ref.current; if (!el) return;
     const o = new IntersectionObserver(([e]) => { if (e.isIntersecting) setV(true); }, { threshold: thr });
@@ -28,7 +29,7 @@ function useReveal(thr = 0.1) {
   }, []);
   return [ref, v];
 }
-function Reveal({ children, delay = 0, y = 22, style = {}, className = "" }) {
+function Reveal({ children, delay = 0, y = 22, style = {}, className = "" }: { children: any; delay?: number; y?: number; style?: any; className?: string }) {
   const [ref, v] = useReveal();
   return (
     <div ref={ref} className={className} style={{ opacity: v?1:0, transform: v?"translateY(0)":`translateY(${y}px)`, transition:`opacity .7s cubic-bezier(.22,1,.36,1) ${delay}s,transform .7s cubic-bezier(.22,1,.36,1) ${delay}s`, ...style }}>
@@ -38,16 +39,16 @@ function Reveal({ children, delay = 0, y = 22, style = {}, className = "" }) {
 }
 
 /* Ticker */
-function Ticker({ items, speed = 50, dir = 1 }) {
+function Ticker({ items, speed = 50, dir = 1 }: { items: any; speed?: number; dir?: number }) {
   const [x, setX] = useState(0);
-  const ref = useRef(null); const raf = useRef(); const lt = useRef();
+  const ref = useRef<any>(null); const raf = useRef<any>(); const lt = useRef<any>();
   useEffect(() => {
-    const fn = t => {
+    const fn = (t: number) => {
       if (!lt.current) lt.current = t;
       const dt = (t - lt.current) / 1000; lt.current = t;
       if (ref.current) {
         const half = ref.current.scrollWidth / 2;
-        setX(p => { const n = p + speed * dt * dir; return Math.abs(n) >= half ? 0 : n; });
+        setX((p: number) => { const n = p + speed * dt * dir; return Math.abs(n) >= half ? 0 : n; });
       }
       raf.current = requestAnimationFrame(fn);
     };
@@ -64,13 +65,13 @@ function Ticker({ items, speed = 50, dir = 1 }) {
 }
 
 /* Counter */
-function Counter({ to, suffix = "" }) {
+function Counter({ to, suffix = "" }: { to: number; suffix?: string }) {
   const [v, setV] = useState(0);
-  const [ref, vis] = useReveal(); const done = useRef(false);
+  const [ref, vis] = useReveal(); const done = useRef<boolean>(false);
   useEffect(() => {
     if (!vis || done.current) return; done.current = true;
     const s = performance.now();
-    const fn = t => { const p = Math.min((t-s)/1800,1); setV(Math.round((1-(1-p)**3)*to)); if(p<1) requestAnimationFrame(fn); };
+    const fn = (t: number) => { const p = Math.min((t-s)/1800,1); setV(Math.round((1-(1-p)**3)*to)); if(p<1) requestAnimationFrame(fn); };
     requestAnimationFrame(fn);
   }, [vis, to]);
   return <span ref={ref}>{v.toLocaleString()}{suffix}</span>;
